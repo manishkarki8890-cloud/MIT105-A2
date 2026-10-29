@@ -1,0 +1,105 @@
+{
+  "results": {
+    "Logistic Regression": {
+      "threshold": 0.075,
+      "precision": 0.38648180242634317,
+      "recall": 0.9330543933054394,
+      "f1": 0.5465686274509803,
+      "f2": 0.7273320287018917,
+      "mcc": 0.5784498863530158,
+      "roc_auc": 0.9869210086903858,
+      "pr_auc": 0.8077888353710702,
+      "brier": 0.01441960170571044,
+      "tp": 223,
+      "fp": 354,
+      "fn": 16,
+      "tn": 5477,
+      "train_seconds": 2.4,
+      "onset_recall": 0.7288135593220338
+    },
+    "Random Forest": {
+      "threshold": 0.189,
+      "precision": 0.5541237113402062,
+      "recall": 0.899581589958159,
+      "f1": 0.6858054226475279,
+      "f2": 0.7998511904761905,
+      "mcc": 0.6916392079235407,
+      "roc_auc": 0.9894346262115127,
+      "pr_auc": 0.8565131280885889,
+      "brier": 0.013434891234721254,
+      "tp": 215,
+      "fp": 173,
+      "fn": 24,
+      "tn": 5658,
+      "train_seconds": 53.9,
+      "onset_recall": 0.5932203389830508
+    },
+    "Gradient Boosting": {
+      "threshold": 0.036,
+      "precision": 0.4778761061946903,
+      "recall": 0.9037656903765691,
+      "f1": 0.6251808972503617,
+      "f2": 0.7670454545454546,
+      "mcc": 0.6395408398692173,
+      "roc_auc": 0.9888490961238052,
+      "pr_auc": 0.8444668493253117,
+      "brier": 0.013627831130172912,
+      "tp": 216,
+      "fp": 236,
+      "fn": 23,
+      "tn": 5595,
+      "train_seconds": 51.4,
+      "onset_recall": 0.6271186440677966
+    },
+    "Persistence baseline": {
+      "threshold": 0.5,
+      "precision": 0.7563025210084033,
+      "recall": 0.7531380753138075,
+      "f1": 0.7547169811320755,
+      "f2": 0.7537688442211056,
+      "mcc": 0.7446870758322782,
+      "roc_auc": 0.8715956197182998,
+      "pr_auc": 0.579320159129391,
+      "brier": 0.01927512355848435,
+      "tp": 180,
+      "fp": 58,
+      "fn": 59,
+      "tn": 5773,
+      "onset_recall": 0.0
+    }
+  },
+  "cv": {
+    "Logistic Regression": {
+      "best_params": {
+        "clf__C": 0.1,
+        "clf__class_weight": null
+      },
+      "cv_pr_auc": 0.8592
+    },
+    "Random Forest": {
+      "best_params": {
+        "clf__class_weight": null,
+        "clf__max_depth": null,
+        "clf__min_samples_leaf": 2
+      },
+      "cv_pr_auc": 0.8755
+    },
+    "Gradient Boosting": {
+      "best_params": {
+        "clf__class_weight": null,
+        "clf__l2_regularization": 1.0,
+        "clf__learning_rate": 0.03,
+        "clf__max_depth": 6,
+        "clf__max_iter": 400
+      },
+      "cv_pr_auc": 0.8707
+    }
+  },
+  "best": "Random Forest",
+  "onset_events": 59,
+  "n_train": 7280,
+  "n_test": 6070,
+  "pos_train": 369,
+  "pos_test": 239,
+  "timeline_station": "Chameliya/Nayalbadi"
+}

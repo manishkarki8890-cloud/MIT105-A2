@@ -1,0 +1,44 @@
+{
+  "threshold_m3s": {
+    "Bahrabise": 17.43,
+    "Belsot": 107.02000000000001,
+    "Bhada Bridge": 3.83,
+    "Chameliya/Nayalbadi": 93.515,
+    "Chatara": 5.775,
+    "Chisapani": 3.165,
+    "Devghat": 7.51,
+    "Khokana": 6.970000000000001,
+    "Kusum": 581.775,
+    "Rasuwagadhi": 4.245
+  },
+  "median_m3s": {
+    "Bahrabise": 1.28,
+    "Belsot": 11.56,
+    "Bhada Bridge": 0.25,
+    "Chameliya/Nayalbadi": 14.81,
+    "Chatara": 0.23,
+    "Chisapani": 0.26,
+    "Devghat": 0.8,
+    "Khokana": 0.14,
+    "Kusum": 18.45,
+    "Rasuwagadhi": 0.59
+  },
+  "upstream": {
+    "Chatara": "Bahrabise",
+    "Devghat": "Rasuwagadhi"
+  },
+  "log": {
+    "rows_raw": 13390,
+    "duplicates": 0,
+    "missing_cells": 0,
+    "rows_column_shift_fixed": 3650,
+    "invalid_values_set_nan": 0,
+    "elevation_corrections": {
+      "Kusum": 200.0,
+      "Chisapani": 190.0
+    },
+    "rows_clean": 13390,
+    "rows_model_ready": 13350,
+    "positive_rate": 0.0455
+  }
+}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}{% block body %}
+<h1>What-if forecast</h1>
+<p class="sub">Enter today's observations for a station. Fields left blank use that station's typical value for the month.</p>
+<div class="grid g2">
+<form class="card" method="post">
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+<div style="grid-column:1/3"><label>Station</label><select name="location">{% for s in stations %}<option value="{{s.location}}" {{'selected' if f.get('location')==s.location}}>{{s.location}} — {{s.river}} ({{s.basin}}) · flood thr {{'%.1f'|format(meta.threshold_m3s[s.location])}} m³/s</option>{% endfor %}</select></div>
+<div><label>Month</label><select name="month">{% for m in range(1,13) %}<option value="{{m}}" {{'selected' if f.get('month','8')|int==m}}>{{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]}}</option>{% endfor %}</select></div>
+<div><label>River discharge today (m³/s) *</label><input name="q_today" required type="number" step="any" value="{{f.get('q_today','80')}}"></div>
+<div><label>Discharge yesterday (m³/s)</label><input name="q_lag1" type="number" step="any" value="{{f.get('q_lag1','60')}}"></div>
+<div><label>Discharge 2 days ago (m³/s)</label><input name="q_lag2" type="number" step="any" value="{{f.get('q_lag2','')}}"></div>
+<div><label>Rain today (mm)</label><input name="rain_today" type="number" step="any" value="{{f.get('rain_today','45')}}"></div>
+<div><label>Rain yesterday (mm)</label><input name="rain_lag1" type="number" step="any" value="{{f.get('rain_lag1','30')}}"></div>
+<div><label>Rain 2 days ago (mm)</label><input name="rain_lag2" type="number" step="any" value="{{f.get('rain_lag2','20')}}"></div>
+<div><label>Rain 3 days ago (mm)</label><input name="rain_lag3" type="number" step="any" value="{{f.get('rain_lag3','')}}"></div>
+<div><label>Rain, last 30 days (mm)</label><input name="rain_30d" type="number" step="any" value="{{f.get('rain_30d','')}}"></div>
+<div><label>Soil moisture (m³/m³, 0–0.6)</label><input name="soil" type="number" step="any" value="{{f.get('soil','')}}"></div>
+<div><label>Rain hours today</label><input name="rain_hours" type="number" step="any" value="{{f.get('rain_hours','')}}"></div>
+<div><label>Relative humidity (%)</label><input name="rh" type="number" step="any" value="{{f.get('rh','')}}"></div>
+</div><div style="margin-top:14px"><button>Predict flood risk</button></div></form>
+<div class="card">{% if res %}
+<div class="muted">Probability of exceeding {{'%.1f'|format(res.thr_q)}} m³/s tomorrow</div>
+<div style="display:flex;align-items:center;gap:16px;margin:8px 0 14px"><div class="big">{{'%.0f'|format(res.p*100)}}%</div><span class="pill {{res.cls}}" style="font-size:15px;padding:6px 14px">{{res.level}}</span></div>
+<div class="bar" style="height:12px"><i class="{{res.cls}}" style="width:{{res.p*100}}%"></i></div>
+<h3 style="margin:20px 0 6px;font-size:15px">What is driving this?</h3>
+<table><tr><th>Input</th><th class="n">Now</th><th class="n">Station typical</th></tr>
+{% for d in res.drivers %}<tr><td>{{'▲ ' if d.high}}{{d.label}}</td><td class="n"><b>{{d.value}}</b> {{d.unit}}</td><td class="n muted">{{d.typical}}</td></tr>{% endfor %}</table>
+<p class="muted" style="margin-top:14px">Alert levels: Watch ≥ {{'%.0f'|format(thr*50)}}%, Warning ≥ {{'%.0f'|format(thr*100)}}%, Severe ≥ 60%. The threshold favours catching floods (recall) over avoiding false alarms.</p>
+{% else %}<div class="muted">Fill the form and press <b>Predict</b>. Example values are pre-filled for a wet August day.</div>
+<h3 style="font-size:15px">JSON API</h3><pre style="background:#f3f2ee;padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap">POST /api/predict
+{"location":"Kusum","month":8,"q_today":600,
+ "q_lag1":420,"rain_today":70,"rain_lag1":40}</pre>{% endif %}</div></div>
+{% endblock %}

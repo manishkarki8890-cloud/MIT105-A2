@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block body %}
+<h1>National flood-risk dashboard</h1>
+<p class="sub">Probability that each station's river discharge exceeds its flood threshold <b>tomorrow</b>, from that day's weather and river state.</p>
+<form class="inline" method="get"><div><label>Forecast issued on</label>
+<input type="date" name="date" value="{{date}}" min="{{dates[0]}}" max="{{dates[1]}}"></div><button>Run forecast</button>
+<span class="muted">Try 2025-10-04 (Koshi Province floods, unseen) or 2024-09-27 (Kathmandu Valley floods, in training data)</span></form>
+<p class="muted" style="margin:-6px 0 14px">{% if insample %}⚠ Dates before 2025 were used to train the replay model, so these results are in-sample.{% else %}✓ Out-of-sample replay: the model never saw data from 2025 onward.{% endif %}</p>
+{% if not cards %}<div class="card">No data for this date.</div>{% else %}
+<div class="grid g2">
+<div class="card"><b>Station map</b>
+<svg viewBox="0 0 600 330" width="100%" style="margin-top:8px">
+<rect x="0" y="0" width="600" height="330" rx="10" fill="#eef3f8"/>
+<path d="M40,60 L130,40 L230,95 L330,130 L420,165 L520,190 L565,215 L560,285 L460,280 L360,262 L250,238 L150,200 L60,160 L30,110 Z" fill="#fff" stroke="#b9c7d6" stroke-width="1.5"/>
+{% for c in cards %}{% set x = 30 + (c.lon - 80.0) / 7.4 * 540 %}{% set y = 300 - (c.lat - 26.4) / 3.6 * 280 %}
+<g><circle cx="{{x}}" cy="{{y}}" r="{{8 + c.p*12}}" class="dot" fill="{{ {'ok':'#0ca30c','watch':'#c98500','warn':'#ec835a','sev':'#d03b3b'}[c.cls] }}" fill-opacity=".8" stroke="#fff" stroke-width="2"><title>{{c.loc}} — {{'%.0f'|format(c.p*100)}}%</title></circle>
+<text x="{{x}}" y="{{y - 14 - c.p*12}}" text-anchor="middle" font-size="11" fill="#333">{{c.loc.split('/')[0]}}</text></g>{% endfor %}
+</svg>
+<div class="muted"><span style="color:#0ca30c">●</span> Normal &nbsp; <span style="color:#c98500">●</span> Watch &nbsp; <span style="color:#ec835a">●</span> Warning &nbsp; <span style="color:#d03b3b">●</span> Severe · dot size = probability</div></div>
+<div class="card"><table><tr><th>Station / river</th><th class="n">P(flood)</th><th>Alert</th><th>Actual next day</th></tr>
+{% for c in cards %}<tr><td><b>{{c.loc}}</b><br><span class="muted">{{c.river}} · Q {{'%.1f'|format(c.q)}} / thr {{'%.1f'|format(c.thr)}} m³/s</span></td>
+<td class="n"><b>{{'%.0f'|format(c.p*100)}}%</b><div class="bar" style="width:70px;margin-left:auto"><i class="{{c.cls}}" style="width:{{c.p*100}}%"></i></div></td>
+<td><span class="pill {{c.cls}}">{{c.level}}</span></td><td class="muted">{{c.actual}}</td></tr>{% endfor %}</table></div>
+</div>{% endif %}
+{% endblock %}

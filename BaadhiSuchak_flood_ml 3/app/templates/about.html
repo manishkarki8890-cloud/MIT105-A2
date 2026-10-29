@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block body %}
+<h1>Model card</h1>
+<p class="sub">Trained on 2023–2024, tested on unseen data from 1 Jan 2025 to 31 Aug 2026 ({{res.n_test}} station-days, {{res.pos_test}} flood days).</p>
+<div class="card"><table><tr><th>Model</th><th class="n">Precision</th><th class="n">Recall</th><th class="n">F1</th><th class="n">F2</th><th class="n">MCC</th><th class="n">ROC-AUC</th><th class="n">PR-AUC</th><th class="n">Onset recall</th></tr>
+{% for n, r in res.results.items() %}<tr style="{{'font-weight:700;background:#eef5fd' if n==res.best}}"><td>{{n}}{{' ★' if n==res.best}}</td>
+{% for k in ['precision','recall','f1','f2','mcc','roc_auc','pr_auc','onset_recall'] %}<td class="n">{{'%.3f'|format(r[k])}}</td>{% endfor %}</tr>{% endfor %}</table>
+<p class="muted">Onset recall = share of the {{res.onset_events}} days where a flood began with no flood the day before that the model flagged. The persistence baseline ("tomorrow = today") cannot catch any of them.</p></div>
+<div class="card" style="margin-top:16px"><b>Intended use</b><p class="muted">Decision support for municipal disaster-management officers, NGOs and community early-warning focal points. It complements, and does not replace, DHM's official water-level warnings. Thresholds are station-specific 95th-percentile discharge (≈ top 18 days a year).</p></div>
+{% endblock %}

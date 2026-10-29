@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% block body %}
+<h1>Station history: {{loc}}</h1>
+<p class="sub">Replay the model day by day and compare its alerts with what the river actually did next day.</p>
+<form class="inline" method="get">
+<div style="min-width:220px"><label>Station</label><select name="loc">{% for s in stations %}<option {{'selected' if s==loc}}>{{s}}</option>{% endfor %}</select></div>
+<div><label>From</label><input type="date" name="start" value="{{start}}" min="{{dates[0]}}" max="{{dates[1]}}"></div>
+<div><label>To</label><input type="date" name="end" value="{{end}}" min="{{dates[0]}}" max="{{dates[1]}}"></div><button>Show</button></form>
+<p class="muted" style="margin:-6px 0 14px">{% if insample %}⚠ Dates before 2025 were used to train the replay model, so these results are in-sample.{% else %}✓ Out-of-sample replay: the model never saw data from 2025 onward.{% endif %}</p>
+<div class="grid g3" style="margin-bottom:16px">
+<div class="card"><div class="muted">Flood days (actual)</div><div class="big">{{stats.floods}}</div></div>
+<div class="card"><div class="muted">Flood days caught by an alert</div><div class="big">{{stats.hits}}</div></div>
+<div class="card"><div class="muted">Alert days issued</div><div class="big">{{stats.alerts}}</div></div></div>
+<div class="card"><svg id="ch" width="100%" viewBox="0 0 1000 420"></svg>
+<div class="muted"><span style="color:#2a78d6">━</span> next-day discharge &nbsp; <span style="color:#d03b3b">┅</span> flood threshold {{'%.1f'|format(thr_q)}} m³/s &nbsp; <span style="color:#1baf7a">█</span> predicted flood probability &nbsp; ┈ alert threshold</div></div>
+<script>
+const S={{series|tojson}}, T={{thr_q}}, A={{thr}}, svg=document.getElementById('ch');
+if(S.length){const W=1000,L=60,R=20,n=S.length,x=i=>L+i*(W-L-R)/Math.max(n-1,1);
+const qmax=Math.max(T*1.15,...S.map(s=>s.q));const y1=v=>20+(1-v/qmax)*200, y2=v=>260+(1-v)*130;
+let h='';[0,.5,1].forEach(f=>{h+=`<line x1="${L}" x2="${W-R}" y1="${y1(qmax*f)}" y2="${y1(qmax*f)}" stroke="#eee"/><text x="${L-6}" y="${y1(qmax*f)+4}" font-size="11" text-anchor="end" fill="#777">${(qmax*f).toFixed(0)}</text>`;
+h+=`<line x1="${L}" x2="${W-R}" y1="${y2(f)}" y2="${y2(f)}" stroke="#eee"/><text x="${L-6}" y="${y2(f)+4}" font-size="11" text-anchor="end" fill="#777">${f.toFixed(1)}</text>`});
+S.forEach((s,i)=>{if(s.y)h+=`<rect x="${x(i)-(W-L-R)/n/2}" y="20" width="${(W-L-R)/n}" height="370" fill="#d03b3b" opacity=".07"/>`});
+h+=`<polygon fill="#1baf7a" opacity=".35" points="${x(0)},${y2(0)} ${S.map((s,i)=>x(i)+','+y2(s.p)).join(' ')} ${x(n-1)},${y2(0)}"/>`;
+h+=`<polyline fill="none" stroke="#1baf7a" stroke-width="2" points="${S.map((s,i)=>x(i)+','+y2(s.p)).join(' ')}"/>`;
+h+=`<polyline fill="none" stroke="#2a78d6" stroke-width="2" points="${S.map((s,i)=>x(i)+','+y1(s.q)).join(' ')}"/>`;
+h+=`<line x1="${L}" x2="${W-R}" y1="${y1(T)}" y2="${y1(T)}" stroke="#d03b3b" stroke-dasharray="6 4" stroke-width="1.5"/>`;
+h+=`<line x1="${L}" x2="${W-R}" y1="${y2(A)}" y2="${y2(A)}" stroke="#555" stroke-dasharray="2 3"/>`;
+const step=Math.ceil(n/8);S.forEach((s,i)=>{if(i%step==0)h+=`<text x="${x(i)}" y="410" font-size="11" text-anchor="middle" fill="#777">${s.d.slice(5)}</text>`});
+h+=`<text x="${L}" y="14" font-size="12" fill="#333" font-weight="600">Discharge (m³/s)</text><text x="${L}" y="254" font-size="12" fill="#333" font-weight="600">P(flood tomorrow) — shaded days = actual flood</text>`;
+svg.innerHTML=h;}
+</script>
+{% endblock %}
